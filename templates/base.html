@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <title>{{ title or '팀 빌딩 앱' }}</title>
+    <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+    <!-- 상단 네비게이션 바 -->
+    <div class="navbar">
+        <div class="nav-left">
+            팀 빌딩
+        </div>
+        <div class="nav-icons">
+            {% if session.get('user_id') %}
+                <a href="/notifications/" title="알림">🔔</a>
+                <a href="/users/mypage" title="마이페이지">👤</a>
+                <a href="/users/logout" title="로그아웃">↩</a>
+            {% else %}
+                <a class="ghost-btn small-nav" href="/users/register">회원가입</a>
+                <a class="primary-btn small-nav" href="/users/login">로그인</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <main class="page-container">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="flashes">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+
+    {% if session.get('user_id') %}
+    <!-- 하단 탭 네비게이션 -->
+    <footer class="bottom-nav">
+        <a href="/" class="{% if request.path == '/' %}active{% endif %}">
+            <span class="bottom-nav-icon">🏠</span>
+            홈
+        </a>
+        <a href="/friends/list" class="{% if 'friends' in request.path %}active{% endif %}">
+            <span class="bottom-nav-icon">👥</span>
+            친구
+        </a>
+        <a href="/classes/" class="{% if 'classes' in request.path %}active{% endif %}">
+            <span class="bottom-nav-icon">🏫</span>
+            클래스
+        </a>
+        <a href="/categories/" class="{% if 'categories' in request.path %}active{% endif %}">
+            <span class="bottom-nav-icon">📂</span>
+            카테고리
+        </a>
+        <a href="/teams/my" class="{% if '/teams/my' in request.path %}active{% endif %}">
+            <span class="bottom-nav-icon">👥</span>
+            내 팀
+        </a>
+        <a href="/users/mypage" class="{% if 'mypage' in request.path %}active{% endif %}">
+            <span class="bottom-nav-icon">👤</span>
+            마이페이지
+        </a>
+    </footer>
+    {% endif %}
+</body>
+</html>

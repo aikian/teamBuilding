@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{#
+  홈 페이지 템플릿
+
+  로그인한 사용자가 팀을 찾거나 자신의 팀을 확인할 수 있는 메인 화면입니다.
+  카드 형태의 버튼을 제공하여 클래스 기반, 카테고리 기반 팀 찾기,
+  그리고 내 팀 보기로 이동할 수 있습니다.
+#}
+
+{% block content %}
+  {% if session.get('user_id') %}
+    <h2 class="page-title">팀 빌딩 시작하기</h2>
+    <p class="page-subtitle">원하는 방식으로 팀을 찾아보세요.</p>
+    <div class="card">
+      <div class="card-icon">🏫</div>
+      <div class="card-title">클래스 내 팀 찾기</div>
+      <div class="card-desc">참여 중인 클래스에서 생성된 팀을 살펴보고 지원하세요.</div>
+      <a href="/classes/" class="primary-btn">클래스 이동</a>
+    </div>
+    <div class="card">
+      <div class="card-icon">📂</div>
+      <div class="card-title">카테고리 내 팀 찾기</div>
+      <div class="card-desc">관심사 기반 카테고리에서 팀을 찾고 직접 만들 수도 있어요.</div>
+      <a href="/categories/" class="primary-btn">카테고리 이동</a>
+    </div>
+  {% else %}
+    <section class="section-card auth-landing">
+      <div class="section-header">
+        <div>
+          <h1 class="section-title">팀 빌딩 플랫폼</h1>
+          <p class="section-desc">로그인하거나 회원가입하면 팀 찾기 기능을 이용할 수 있습니다.</p>
+        </div>
+        <div class="section-cta">
+          <a class="primary-btn" href="/users/login">로그인</a>
+          <a class="ghost-btn" href="/users/register">회원가입</a>
+        </div>
+      </div>
+    </section>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="section-card">
+    <div class="section-header">
+        <div>
+            <p class="eyebrow">클래스 기반 팀 빌딩</p>
+            <h1 class="section-title">클래스에 참여하고 팀을 찾아보세요</h1>
+            <p class="section-desc">
+                참여 코드를 입력해 클래스를 추가하고, 각 클래스 상세 페이지에서 팀 참여 및 생성 기능을 이용할 수 있습니다.
+            </p>
+        </div>
+    </div>
+    <div class="split-card">
+        <div class="split-panel">
+            <h3>클래스 참여하기</h3>
+            <p class="section-desc">대표자가 공유한 코드를 입력하면 즉시 클래스에 합류합니다.</p>
+            <form method="post" action="{{ url_for('class.join') }}" class="stack-form">
+                <div class="input-group">
+                    <label for="class-code">참여 코드</label>
+                    <input id="class-code" name="code" maxlength="10" placeholder="예) ABC123" required />
+                </div>
+                <button type="submit" class="secondary-btn">클래스 참여</button>
+            </form>
+        </div>
+        <div class="split-panel">
+            <h3>클래스 만들기</h3>
+            <p class="section-desc">새로운 프로젝트나 수업을 위한 클래스를 직접 생성하세요.</p>
+            {% if session.get('user_id') %}
+            <a class="primary-btn" href="{{ url_for('class.create') }}">클래스 만들기</a>
+            {% else %}
+            <a class="primary-btn" href="{{ url_for('user.login') }}">로그인 후 만들기</a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<section class="list-card">
+    <div class="section-header compact">
+        <div>
+            <h2 class="section-title">내 클래스 목록</h2>
+            <p class="section-desc">클래스를 선택하면 팀 목록과 팀 만들기 버튼을 확인할 수 있습니다.</p>
+        </div>
+    </div>
+    {% if classes %}
+    <ul class="request-list">
+        {% for clazz in classes %}
+        <li>
+            <div>
+                <strong>{{ clazz.name }}</strong>
+                <p class="request-message">{{ clazz.description or '설명이 아직 등록되지 않았습니다.' }}</p>
+                <span class="chip">코드 {{ clazz.code }}</span>
+            </div>
+            <div class="button-row compact">
+                <a class="primary-btn" href="{{ url_for('class.detail', class_id=clazz.id) }}">팀 목록 / 만들기</a>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p class="empty-inline">참여 중인 클래스가 없습니다. 먼저 클래스에 참여하거나 만들어주세요.</p>
+    {% endif %}
+</section>
+{% endblock %}

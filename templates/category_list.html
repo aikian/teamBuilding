@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="section-card">
+    <div class="section-header">
+        <div>
+            <p class="eyebrow">관심사 기반 매칭</p>
+            <h1 class="section-title">카테고리를 만들고 팀을 탐색하세요</h1>
+            <p class="section-desc">
+                관심사별 카테고리를 생성한 뒤, 카테고리 상세 페이지에서 팀 참여 및 팀 만들기 기능을 이용할 수 있습니다.
+            </p>
+        </div>
+    </div>
+    <div class="split-card">
+        <div class="split-panel">
+            <h3>카테고리 만들기</h3>
+            <p class="section-desc">겹치지 않는 이름으로 관심 분야를 등록해 보세요.</p>
+            <form method="post" class="stack-form">
+                <div class="input-group">
+                    <label for="category-name">카테고리 이름</label>
+                    <input id="category-name" name="name" placeholder="예) AI 스터디, UX 리서치" required />
+                </div>
+                <button type="submit" class="primary-btn">카테고리 만들기</button>
+            </form>
+        </div>
+        <div class="split-panel">
+            <h3>카테고리 활용 안내</h3>
+            <ul class="guideline-list">
+                <li>카테고리를 선택하면 소속된 팀을 한 번에 볼 수 있습니다.</li>
+                <li>팀 상세 페이지에서 모집 여부를 확인하고 참여 신청하세요.</li>
+                <li>팀장은 해당 카테고리에서 즉시 새 팀을 만들 수 있어요.</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<section class="list-card">
+    <div class="section-header compact">
+        <div>
+            <h2 class="section-title">카테고리 목록</h2>
+            <p class="section-desc">관심 카테고리를 선택해 팀 목록과 팀 만들기 버튼을 확인하세요.</p>
+        </div>
+    </div>
+    {% if categories %}
+    <ul class="request-list">
+        {% for category in categories %}
+        <li>
+            <div>
+                <strong>{{ category.name }}</strong>
+                <p class="request-message">등록일 {{ category.created_at.strftime('%Y-%m-%d') if category.created_at else '' }}</p>
+            </div>
+            <div class="button-row compact">
+                <a class="primary-btn" href="{{ url_for('category.detail', category_id=category.id) }}">팀 목록 / 만들기</a>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p class="empty-inline">아직 등록된 카테고리가 없습니다. 관심 주제를 직접 추가해 주세요.</p>
+    {% endif %}
+</section>
+{% endblock %}

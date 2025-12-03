@@ -1,0 +1,286 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="section-card">
+    <div class="team-hero">
+        <div>
+            <p class="eyebrow">팀 상세</p>
+            <h1 class="section-title">{{ team.name }}</h1>
+            <div class="chip">
+                {% if team.class_room %}
+                    클래스 · {{ team.class_room.name }}
+                {% elif team.category %}
+                    카테고리 · {{ team.category.name }}
+                {% else %}
+                    독립 팀
+                {% endif %}
+            </div>
+            <p class="section-desc">{{ team.goal or '팀 목표가 아직 등록되지 않았어요.' }}</p>
+            <div class="team-hero-meta">
+                <span class="badge {{ 'status-open' if team.recruit_status == 'OPEN' else 'status-closed' }}">
+                    {{ '모집 중' if team.recruit_status == 'OPEN' else '모집 마감' }}
+                </span>
+                {% if team.capacity %}
+                <span class="chip">정원 {{ team.capacity }}명</span>
+                {% endif %}
+            </div>
+        </div>
+        <div class="team-hero-actions">
+            {% if team.openchat_url %}
+            <a class="secondary-btn" target="_blank" href="{{ team.openchat_url }}">모임 링크 열기</a>
+            {% endif %}
+            <a class="ghost-btn" href="{{ url_for('team.list_my_teams') }}">내 팀 목록</a>
+        </div>
+    </div>
+</section>
+
+<section class="detail-grid">
+    <article class="list-card">
+        <h3>팀 정보</h3>
+        <dl class="info-list">
+            <div>
+                <dt>목표</dt>
+                <dd>{{ team.goal or '등록된 목표가 없습니다.' }}</dd>
+            </div>
+            <div>
+                <dt>필요 기술</dt>
+                <dd>
+                    {% if team.required_skills %}
+                        <div class="pill-list">
+                            {% for skill in team.required_skills.split(',') %}
+                                <span class="chip">{{ skill.strip() }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        아직 필요 기술을 지정하지 않았습니다.
+                    {% endif %}
+                </dd>
+            </div>
+            <div>
+                <dt>모집 상태</dt>
+                <dd>{{ '모집 중' if team.recruit_status == 'OPEN' else '모집 마감' }}</dd>
+            </div>
+            <div>
+                <dt>오픈 채팅</dt>
+                <dd>
+                    {% if team.openchat_url %}
+                        <a href="{{ team.openchat_url }}" target="_blank">{{ team.openchat_url }}</a>
+                    {% else %}
+                        등록된 링크가 없습니다.
+                    {% endif %}
+                </dd>
+            </div>
+        </dl>
+        
+        {% if is_leader %}
+        <!-- 수정 -->
+        <div class="edit-button-row">
+
+            <!-- 왼쪽 버튼들 -->
+            <div class="left-buttons">
+                <form method="post" action="{{ url_for('team.update_recruit_status', team_id=team.id, status='CLOSED' if team.recruit_status == 'OPEN' else 'OPEN') }}">
+                    <button type="submit" class="secondary-btn team-action-btn">
+                        {{ '모집 마감' if team.recruit_status == 'OPEN' else '모집 재개' }}
+                    </button>
+                </form>
+                <form method="post" action="{{ url_for('team.dissolve_team', team_id=team.id) }}" onsubmit="return confirm('정말 팀을 해체하시겠어요?');">
+                    <button type="submit" class="secondary-btn danger team-action-btn">
+                        팀 해체
+                    </button>
+                </form>
+
+            </div>
+
+            <!-- 오른쪽 팀 정보 수정 -->
+            <div class="right-buttons">
+                <a class="ghost-btn team-action-btn" href="{{ url_for('team.edit_team', team_id=team.id) }}">
+                    팀 정보 수정
+                </a>
+            </div>
+
+        </div>
+
+        {% endif %}
+
+    </article>
+
+    <article class="list-card">
+        <h3>참여 / 신청</h3>
+        {% if user_member %}
+            <!-- 팀장일 때: 사용자 검색 / 초대 버튼 노출 -->
+            {% if is_leader %}
+                <p>팀장으로 참여 중입니다. 팀원을 초대해 보세요.</p>
+                <div class="button-row" style="justify-content: flex-end;">
+                    <a class="small-btn ghost"
+                       href="{{ url_for('friend.search', team_id=team.id) }}">
+                        사용자 검색 / 초대
+                    </a>
+                </div>
+            {% else %}
+                {# 일반 팀원일 때 #}
+                <p>이미 팀에 참여 중입니다.</p>
+                
+                <!-- 팀 탈퇴 버튼 추가 -->
+                <div class="button-row" style="justify-content: flex-end; margin-top: 200px;">
+                    <form method="post"
+                          action="{{ url_for('team.remove_member',
+                                             team_id=team.id,
+                                             user_id=user_member.user_id) }}"
+                          onsubmit="return confirm('정말 이 팀에서 나가시겠어요?');">
+                        <button type="submit" class="ghost-btn danger">
+                            팀 탈퇴
+                        </button>
+                    </form>
+                </div>
+            {% endif %}
+
+        {% else %}
+            {% if user_pending_invite %}
+                <p>초대를 받았습니다. 응답해 주세요.</p>
+                <div class="button-row">
+                    <form method="post" action="{{ url_for('team.process_invitation', invitation_id=user_pending_invite.id, action='accept') }}">
+                        <button type="submit" class="invite-btn primary">
+                            초대 수락
+                        </button>
+                    </form>
+
+                    <form method="post" action="{{ url_for('team.process_invitation', invitation_id=user_pending_invite.id, action='reject') }}">
+                        <button type="submit" class="invite-btn ghost">
+                            초대 거절
+                        </button>
+                    </form>
+                </div>
+
+            {% elif user_pending_application %}
+                <p>지원이 접수되어 팀장의 승인을 기다리는 중입니다.</p>
+            {% elif team.recruit_status == 'OPEN' %}
+                <form method="post" action="{{ url_for('team.apply_to_team', team_id=team.id) }}" class="stack-form">
+                    <div class="input-group">
+                        <label for="message">지원 메시지 (선택)</label>
+                        <textarea id="message" name="message" placeholder="자기소개나 관심 이유를 남겨주세요."></textarea>
+                    </div>
+                    <button type="submit" class="primary-btn">팀 참여 신청</button>
+                </form>
+            {% else %}
+                <p>모집이 마감되어 신청할 수 없습니다.</p>
+            {% endif %}
+        {% endif %}
+    </article>
+</section>
+
+<section class="list-card">
+    <h3>팀원</h3>
+    <ul class="member-list">
+        {% for m in members %}
+        <li>
+            <div>
+                <strong>{{ m.user.name }}</strong>
+                <span class="chip {{ 'highlight' if m.member.role == 'LEADER' else '' }}">
+                    {{ '팀장' if m.member.role == 'LEADER' else '팀원' }}
+                </span>
+            </div>
+            {% if is_leader and m.member.user_id != team.owner_id %}
+            <div class="button-row compact">
+                <form method="post" action="{{ url_for('team.remove_member', team_id=team.id, user_id=m.member.user_id) }}">
+                    <button type="submit" class="ghost-btn">제거</button>
+                </form>
+                <form method="post" action="{{ url_for('team.delegate_leader', team_id=team.id, user_id=m.member.user_id) }}">
+                    <button type="submit" class="secondary-btn">팀장 위임</button>
+                </form>
+            </div>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+</section>
+
+{% if is_leader and applications %}
+<section class="list-card">
+    <h3>대기 중인 지원</h3>
+    <ul class="request-list">
+        {% for item in applications %}
+        {% set app = item.application %}
+        {% set applicant = item.user %}
+        <li>
+            <div>
+                <strong>
+                    {% if applicant %}
+                        {{ applicant.name }}{% if applicant.student_no %} ({{ applicant.student_no }}){% endif %}
+                    {% else %}
+                        사용자 {{ app.user_id }}
+                    {% endif %}
+                </strong>
+
+                <p class="request-message">
+                    {{ app.message or '지원 메시지가 없습니다.' }}
+                </p>
+                <!-- 추가(수정)-->
+                {# 지원자 태그 영역 #}
+                {% if applicant and applicant.profile %}
+                    <div class="pill-list" style="margin-top: 8px;">
+                        {# 성격 태그 #}
+                        {% if applicant.profile.personality %}
+                            {% for tag in applicant.profile.personality.split(',') %}
+                                <span class="tag">{{ tag.strip() }}</span>
+                            {% endfor %}
+                        {% endif %}
+
+                        {# 목표 태그 #}
+                        {% if applicant.profile.goals %}
+                            {% for tag in applicant.profile.goals.split(',') %}
+                                <span class="tag">{{ tag.strip() }}</span>
+                            {% endfor %}
+                        {% endif %}
+
+                        {# 기술 태그 #}
+                        {% if applicant.profile.skills %}
+                            {% for tag in applicant.profile.skills.split(',') %}
+                                <span class="tag">{{ tag.strip() }}</span>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <p class="helper-text" style="margin-top: 6px;">
+                        등록된 태그 정보가 없습니다.
+                    </p>
+                {% endif %}
+            </div>
+
+            <div class="button-row compact">
+                <form method="post"
+                      action="{{ url_for('team.process_application', application_id=app.id, action='accept') }}">
+                    <button type="submit" class="small-btn">승인</button>
+                </form>
+                <form method="post"
+                      action="{{ url_for('team.process_application', application_id=app.id, action='reject') }}">
+                    <button type="submit" class="small-btn ghost">거절</button>
+                </form>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+</section>
+{% endif %}
+
+
+{% if is_leader and invitations %}
+<section class="list-card">
+    <h3>대기 중인 초대</h3>
+    <ul class="request-list">
+        {% for item in invitations %}
+        <li>
+            <div>
+                {% if item.user %}
+                    <strong>{{ item.user.name }}</strong>
+                    <p>{{ item.user.student_no or '학번 정보 없음' }}</p>
+                {% else %}
+                    <strong>사용자 {{ item.invitation.to_user_id }}</strong>
+                {% endif %}
+                <span class="badge subtle">{{ item.invitation.status }}</span>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+</section>
+{% endif %}
+{% endblock %}

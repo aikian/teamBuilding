@@ -1,0 +1,141 @@
+<!-- 수정 -->
+{% extends "base.html" %}
+
+{% block content %}
+<section class="section-card">
+    <div class="section-header">
+        <div>
+            <p class="eyebrow">팀 개설</p>
+            <h1 class="section-title">클래스 또는 카테고리에서 팀 만들기</h1>
+            <p class="section-desc">
+                팀 이름과 목표를 입력하고, 소속될 <strong>클래스 또는 카테고리 중 하나</strong>를 반드시 선택하세요.
+            </p>
+        </div>
+    </div>
+</section>
+
+<section class="split-card stacked">
+    <div class="split-panel form-panel">
+        <form method="post" class="stack-form">
+
+            <div class="input-group">
+                <label for="name">팀 이름</label>
+                <input id="name" name="name" placeholder="예) AI 캡스톤 1팀" required />
+            </div>
+
+            <div class="input-group">
+                <label for="goal">팀 목표</label>
+                <textarea id="goal" name="goal" placeholder="예) AI 기반 피트니스 코칭 서비스 MVP 완성"></textarea>
+            </div>
+
+            <div class="input-group">
+                <label for="required_skills">필요 역량 (콤마로 구분)</label>
+                <input id="required_skills" name="required_skills" placeholder="Python, 데이터분석, UI/UX" />
+            </div>
+
+            <div class="input-group inline">
+                <div>
+                    <label for="capacity">정원 (선택)</label>
+                    <input id="capacity" name="capacity" type="number" min="1" placeholder="예) 5" />
+                </div>
+                <div>
+                    <label for="openchat_url">모임 링크 (선택)</label>
+                    <input id="openchat_url" name="openchat_url" placeholder="https://open.kakao.com/..." />
+                </div>
+            </div>
+
+            <!-- 팀 유형 선택 필수 -->
+            <div class="input-group">
+                <label>팀 유형 선택 <span style="color:red;">*</span></label>
+                <div class="radio-row">
+                    <label>
+                        <input type="radio" name="team_mode" value="class" required
+                               {% if default_class_id %}checked{% endif %}>
+                        클래스에서 팀 만들기
+                    </label>
+                    <label>
+                        <input type="radio" name="team_mode" value="category" required
+                               {% if default_category_id %}checked{% endif %}>
+                        카테고리에서 팀 만들기
+                    </label>
+                </div>
+                <p class="helper-text">둘 중 하나는 반드시 선택해야 합니다.</p>
+            </div>
+
+            <!-- 클래스 선택 -->
+            <div class="input-group" id="class-select-group"
+                 {% if default_category_id %}style="display:none;"{% endif %}>
+                <label for="class_id">클래스 선택</label>
+                <select id="class_id" name="class_id">
+                    <option value="">클래스를 선택하세요</option>
+                    {% for c in classes %}
+                    <option value="{{ c.id }}"
+                        {% if default_class_id and default_class_id == c.id %}selected{% endif %}>
+                        {{ c.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+                <p class="helper-text">클래스에 소속된 팀은 해당 클래스 내 팀 목록에 표시됩니다.</p>
+            </div>
+
+            <!-- 카테고리 선택 -->
+            <div class="input-group" id="category-select-group"
+                 {% if not default_category_id %}style="display:none;"{% endif %}>
+                <label for="category_id">카테고리 선택</label>
+                <select id="category_id" name="category_id">
+                    <option value="">카테고리를 선택하세요</option>
+                    {% for cat in categories %}
+                    <option value="{{ cat.id }}"
+                        {% if default_category_id and default_category_id == cat.id %}selected{% endif %}>
+                        {{ cat.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+                <p class="helper-text">카테고리를 선택하면 관심사 기반 팀 목록에서 노출됩니다.</p>
+            </div>
+
+            <button type="submit" class="primary-btn">팀 만들기</button>
+        </form>
+    </div>
+
+    <div class="split-panel tips-panel">
+        <h3>빠른 활용 가이드</h3>
+        <ul class="guideline-list">
+            <li>팀은 <strong>클래스 기준</strong> 또는 <strong>카테고리 기준</strong> 중 반드시 하나에 속합니다.</li>
+            <li>둘 다 선택하지 않으면 제출이 불가능합니다.</li>
+            <li>모집 마감은 팀 상세 페이지에서 언제든 변경할 수 있습니다.</li>
+        </ul>
+
+        <a class="ghost-btn" href="{{ url_for('class.list_classes') }}">클래스 관리로 돌아가기</a>
+        <a class="ghost-btn" href="{{ url_for('category.list_and_create') }}">카테고리 관리로 돌아가기</a>
+    </div>
+</section>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const radios = document.querySelectorAll("input[name='team_mode']");
+    const classGroup = document.getElementById("class-select-group");
+    const categoryGroup = document.getElementById("category-select-group");
+    const classSelect = document.getElementById("class_id");
+    const categorySelect = document.getElementById("category_id");
+
+    function updateMode() {
+        const selected = document.querySelector("input[name='team_mode']:checked").value;
+
+        if (selected === "class") {
+            classGroup.style.display = "";
+            categoryGroup.style.display = "none";
+            categorySelect.value = "";
+        } else {
+            classGroup.style.display = "none";
+            categoryGroup.style.display = "";
+            classSelect.value = "";
+        }
+    }
+
+    radios.forEach(radio => radio.addEventListener("change", updateMode));
+    updateMode();
+});
+</script>
+
+{% endblock %}

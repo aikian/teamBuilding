@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>{{ team.name }} 팀에 대한 매칭 후보</h2>
+{% if candidates %}
+    <table>
+        <tr><th>후보자</th><th>점수</th>{% if is_leader %}<th>초대</th>{% endif %}</tr>
+        {% for user, score in candidates %}
+            <tr>
+                <td>{{ user.name }}</td>
+                <td>{{ score }}</td>
+                {% if is_leader %}
+                    <td>
+                        <form method="post" action="{{ url_for('team.invite_user', team_id=team.id, user_id=user.id) }}">
+                            <button type="submit">초대</button>
+                        </form>
+                    </td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+    </table>
+{% else %}
+    <p>해당 조건에 맞는 후보가 없습니다.</p>
+{% endif %}
+{% endblock %}

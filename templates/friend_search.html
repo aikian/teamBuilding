@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="section-card">
+    <div class="section-header compact">
+        <div>
+            <p class="eyebrow">사용자 검색</p>
+            <h1 class="section-title">이름 / 학번으로 사용자 찾기</h1>
+            <p class="section-desc">
+                친구를 추가하거나, 현재 보고 있는 팀에 초대할 사용자를 검색할 수 있어요.
+            </p>
+        </div>
+    </div>
+
+    <form method="post" action="{{ url_for('friend.search', team_id=team_id) }}" class="stack-form">
+        <div class="input-group">
+            <label for="keyword">검색어</label>
+            <input id="keyword" name="keyword" placeholder="이름 또는 학번" required />
+        </div>
+        <div class="form-actions center">
+            <button type="submit" class="small-btn">
+                사용자 검색
+            </button>
+        </div>
+    </form>
+</section>
+
+{% if results %}
+<section class="list-card">
+    <h3>검색 결과</h3>
+    <ul class="member-list">
+    {% for user in results %}
+        <li>
+            <div>
+                <strong>{{ user.name }}</strong>
+                {% if user.student_no %}
+                    <p class="request-message">{{ user.student_no }}</p>
+                {% endif %}
+            </div>
+            <div class="button-row compact">
+                <!-- # 친구 추가 버튼 #-->
+                <form method="post"
+                      action="{{ url_for('friend.add_friend', user_id=user.id) }}">
+                    <button type="submit" class="small-btn ghost">친구 추가</button>
+                </form>
+
+                <!-- # 팀 초대 버튼 (team_id가 있을 때만 노출) # -->
+                {% if team_id %}
+                <form method="post"
+                      action="{{ url_for('team.invite_user', team_id=team_id, user_id=user.id) }}">
+                    <button type="submit" class="small-btn">팀 초대</button>
+                </form>
+                {% endif %}
+            </div>
+        </li>
+    {% endfor %}
+    </ul>
+</section>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>대기 중인 친구 요청</h2>
+{% if requests %}
+    <ul>
+    {% for item in requests %}
+        {# each item is a dict with 'request' and 'requester' keys #}
+        <li>
+            {% if item.requester %}
+                {{ item.requester.name }} ({{ item.requester.student_no }})
+            {% else %}
+                User ID {{ item.request.user_id }}
+            {% endif %}
+            <form method="post" action="{{ url_for('friend.accept_friend', request_id=item.request.id) }}" style="display:inline;">
+                <button type="submit">수락</button>
+            </form>
+            <form method="post" action="{{ url_for('friend.reject_friend', request_id=item.request.id) }}" style="display:inline;">
+                <button type="submit">거절</button>
+            </form>
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>대기 중인 친구 요청이 없습니다.</p>
+{% endif %}
+{% endblock %}

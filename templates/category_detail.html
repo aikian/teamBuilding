@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="section-card">
+    <div class="section-header">
+        <div>
+            <p class="eyebrow">카테고리</p>
+            <h1 class="section-title">{{ category.name }}</h1>
+            <p class="section-desc">관심사 기반으로 팀을 찾고 만들 수 있는 공간입니다.</p>
+        </div>
+        <div class="section-cta">
+            <a class="primary-btn" href="{{ url_for('team.create_team') }}?category_id={{ category.id }}">이 카테고리에 팀 만들기</a>
+        </div>
+    </div>
+    <div class="info-banner">
+        이 카테고리에서 관심사가 맞는 팀원들을 찾아보세요.
+    </div>
+</section>
+
+<section class="list-card">
+    <div class="class-team-header">
+        <div>
+            <h3 class="section-title">팀 목록</h3>
+            <p class="section-desc">관심 있는 팀을 선택해 상세에서 바로 참여 신청할 수 있습니다.</p>
+        </div>
+
+        <!-- 정렬 드롭다운 -->
+        <form method="get"
+              action="{{ url_for('category.detail', category_id=category.id) }}">
+            <label for="sort"
+                   class="helper-text"
+                   style="text-align:right; display:block;">
+                정렬 기준
+            </label>
+            <select id="sort" name="sort" class="sort-select" onchange="this.form.submit()">
+                <option value=""
+                    {% if request.args.get('sort') != 'match' %}selected{% endif %}>
+                기본 정렬
+                </option>
+                <option value="match"
+                        {% if request.args.get('sort') == 'match' %}selected{% endif %}>
+                    매칭 점수순
+                </option>
+            </select>
+
+        </form>
+        <!-- 여기까지 -->
+    </div>
+    {% if teams %}
+    <div class="card-grid">
+        {% for team in teams %}
+        <article class="team-card">
+            <div class="team-card-head">
+                <div>
+                    <h3>{{ team.name }}</h3>
+                    <p class="list-desc">{{ team.goal or '팀 목표가 아직 등록되지 않았습니다.' }}</p>
+                </div>
+                <div class="team-status">
+                    <span class="badge {{ 'status-open' if team.recruit_status == 'OPEN' else 'status-closed' }}">
+                        {{ '모집 중' if team.recruit_status == 'OPEN' else '모집 마감' }}
+                    </span>
+                    {% if team.capacity %}
+                    <p class="team-meta">정원 {{ team.capacity }}명</p>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="team-card-foot">
+                <a class="primary-btn" href="{{ url_for('team.team_detail', team_id=team.id) }}">팀 상세 / 참여</a>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="empty-inline">아직 팀이 없습니다. 첫 번째 팀을 만들어보세요!</p>
+    {% endif %}
+</section>
+{% endblock %}
+

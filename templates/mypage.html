@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{#
+  마이페이지 템플릿
+  로그인한 사용자의 프로필 정보와 가입된 팀 목록을 보여줍니다.
+  태그로 성격, 목표, 기술 등을 표시하며 각 팀별로 링크를 제공합니다.
+#}
+
+{% block content %}
+  {% if user %}
+    {% set profile = user.profile %}
+    <section class="section-card">
+      <div class="profile-card">
+        <div class="profile-header">
+          <div class="profile-avatar">{{ user.name[:1] }}</div>
+          <div class="profile-info">
+            <h2>{{ user.name }}</h2>
+            <p>{{ user.school or '학교 정보 미입력' }}</p>
+            <p class="request-message">아이디: {{ user.username }} · 학번: {{ user.student_no }}</p>
+          </div>
+        </div>
+        <!-- 수정 -->
+        <div class="profile-tags">
+          <!-- 성격 태그 -->
+          {% if profile and profile.personality %}
+            {% for tag in profile.personality.split(',') %}
+              <span class="tag selected">{{ tag.strip() }}</span>
+            {% endfor %}
+          {% endif %}
+
+          <!-- 목표 태그 -->
+          {% if profile and profile.goals %}
+            {% for tag in profile.goals.split(',') %}
+              <span class="tag selected">{{ tag.strip() }}</span>
+            {% endfor %}
+          {% endif %}
+
+          <!-- 기술 태그 -->
+          {% if profile and profile.skills %}
+            {% for tag in profile.skills.split(',') %}
+              <span class="tag selected">{{ tag.strip() }}</span>
+            {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+    </section>
+
+    <section class="split-card stacked">
+      <div class="split-panel form-panel">
+        <h3>회원 정보 수정</h3>
+        <form method="post" action="{{ url_for('user.update_profile') }}" class="stack-form">
+          <div class="input-group inline">
+            <div>
+              <label for="name">이름</label>
+              <input id="name" name="name" value="{{ user.name }}" required />
+            </div>
+            <div>
+              <label for="school">학교</label>
+              <input id="school" name="school" value="{{ user.school or '' }}" />
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="personality">성격 태그</label>
+            <input id="personality" name="personality" value="{{ profile.personality if profile else '' }}" placeholder="예) 소통, 성실" />
+          </div>
+          <div class="input-group">
+            <label for="goals">목표 태그</label>
+            <input id="goals" name="goals" value="{{ profile.goals if profile else '' }}" placeholder="예) 창업, 포트폴리오" />
+          </div>
+          <div class="input-group">
+            <label for="skills">기술 태그</label>
+            <input id="skills" name="skills" value="{{ profile.skills if profile else '' }}" placeholder="예) Python, 기획" />
+          </div>
+          <button type="submit" class="primary-btn">회원 정보 저장</button>
+        </form>
+      </div>
+      <div class="split-panel">
+        <h3>회원 탈퇴</h3>
+        <p class="section-desc">
+          탈퇴 시 모든 팀에서 자동으로 탈퇴하며, 팀 대표라면 위임 또는 팀 해체 후 진행할 수 있습니다.
+        </p>
+        {% if leader_conflicts %}
+        <div class="info-banner">
+          <strong>조치 필요</strong>
+          <ul class="guideline-list">
+            {% for item in leader_conflicts %}
+              <li>
+                {{ item.team.name if item.team else '팀' }}
+                {% if item.has_other_members %}
+                  : 다른 팀원에게 팀장을 위임해 주세요.
+                {% else %}
+                  : 팀원을 모집 중이 아니므로 팀을 해체한 뒤 탈퇴 가능합니다.
+                {% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+        <form method="post" action="{{ url_for('user.delete_account') }}" onsubmit="return confirm('탈퇴 시 모든 정보가 삭제되고 팀에서도 나가게 됩니다. 계속하시겠습니까?');">
+          <button type="submit" class="ghost-btn danger" {% if leader_conflicts %}disabled{% endif %}>회원 탈퇴</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="list-card">
+      <h3>내 팀 목록</h3>
+      {% if teams %}
+      <ul class="member-list">
+        {% for membership in teams %}
+        <li>
+          <div>
+            <strong>{{ membership.team.name }}</strong>
+            <span class="chip {{ 'highlight' if membership.role == 'LEADER' else '' }}">
+              {{ '팀장' if membership.role == 'LEADER' else '팀원' }}
+            </span>
+            <p class="request-message">
+              {% if membership.team.class_room %}
+                클래스 · {{ membership.team.class_room.name }}
+              {% elif membership.team.category %}
+                카테고리 · {{ membership.team.category.name }}
+              {% else %}
+                독립 팀
+              {% endif %}
+            </p>
+          </div>
+          <a class="small-btn ghost" href="{{ url_for('team.team_detail', team_id=membership.team.id) }}">팀 상세</a>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="empty-inline">참여 중인 팀이 없습니다.</p>
+      {% endif %}
+    </section>
+  {% else %}
+    <p>사용자 정보를 찾을 수 없습니다.</p>
+  {% endif %}
+{% endblock %}

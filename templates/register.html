@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="section-card auth-card">
+    <div class="section-header">
+        <div>
+            <p class="eyebrow">Create account</p>
+            <h1 class="section-title">팀 빌딩 회원가입</h1>
+            <p class="section-desc">
+                기본 정보와 관심 태그를 등록하면 더 정확한 팀 매칭이 가능해집니다.
+            </p>
+        </div>
+        <div class="auth-switch">
+            <span>이미 계정이 있나요?</span>
+            <a class="ghost-btn" href="{{ url_for('user.login') }}">로그인</a>
+        </div>
+    </div>
+
+    <form method="post" class="stack-form" id="register-form">
+        <div class="input-group inline">
+            <div>
+                <label for="username">아이디</label>
+                <input id="username" name="username" required autocomplete="username" />
+            </div>
+            <div>
+                <label for="password">비밀번호</label>
+                <input id="password" name="password" type="password" required autocomplete="new-password" />
+            </div>
+        </div>
+
+        <div class="input-group inline">
+            <div>
+                <label for="name">이름</label>
+                <input id="name" name="name" required />
+            </div>
+            <div>
+                <label for="student_no">학번</label>
+                <input id="student_no" name="student_no" required />
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label for="school">학교</label>
+            <input id="school" name="school" />
+        </div>
+
+        <!-- 성격 태그 -->
+        <div class="input-group">
+            <label>성격 태그 *</label>
+            <div class="tag-container" id="personality-tags">
+                <span class="tag" data-value="외향적">외향적</span>
+                <span class="tag" data-value="내향적">내향적</span>
+                <span class="tag" data-value="리더십">리더십</span>
+                <span class="tag" data-value="협력적">협력적</span>
+                <span class="tag" data-value="창의적">창의적</span>
+                <span class="tag" data-value="논리적">논리적</span>
+            </div>
+
+            <div class="custom-tag-row">
+                <input type="text" class="custom-tag-input" placeholder="원하는 태그 직접 입력" />
+                <button type="button"
+                        class="custom-tag-add"
+                        data-target="personality-tags">
+                    추가
+                </button>
+            </div>
+
+            <input type="hidden" id="personality" name="personality">
+        </div>
+
+        <!-- 목표 태그 -->
+        <div class="input-group">
+            <label>목표 태그 *</label>
+            <div class="tag-container" id="goal-tags">
+                <span class="tag" data-value="학습">학습</span>
+                <span class="tag" data-value="프로젝트 완성">프로젝트 완성</span>
+                <span class="tag" data-value="네트워킹">네트워킹</span>
+                <span class="tag" data-value="경쟁">경쟁</span>
+                <span class="tag" data-value="즐거움">즐거움</span>
+                <span class="tag" data-value="성장">성장</span>
+            </div>
+
+            <div class="custom-tag-row">
+                <input type="text" class="custom-tag-input" placeholder="원하는 태그 직접 입력" />
+                <button type="button"
+                        class="custom-tag-add"
+                        data-target="goal-tags">
+                    추가
+                </button>
+            </div>
+
+            <input type="hidden" id="goal" name="goals">
+        </div>
+
+        <!-- 기술 태그 -->
+        <div class="input-group">
+            <label>기술 태그 *</label>
+            <div class="tag-container" id="skill-tags">
+                <span class="tag" data-value="React">React</span>
+                <span class="tag" data-value="Node.js">Node.js</span>
+                <span class="tag" data-value="Python">Python</span>
+                <span class="tag" data-value="Design">Design</span>
+                <span class="tag" data-value="PM">PM</span>
+                <span class="tag" data-value="Marketing">Marketing</span>
+            </div>
+
+            <div class="custom-tag-row">
+                <input type="text" class="custom-tag-input" placeholder="원하는 태그 직접 입력" />
+                <button type="button"
+                        class="custom-tag-add"
+                        data-target="skill-tags">
+                    추가
+                </button>
+            </div>
+
+            <input type="hidden" id="skill" name="skills">
+        </div>
+
+        <button type="submit" class="primary-btn">회원가입 완료</button>
+    </form>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // 선택된 태그를 hidden input에 반영
+    function updateHiddenFromContainer(container) {
+        const selectedValues = [...container.querySelectorAll('.tag.selected')]
+            .map(tag => tag.dataset.value)
+            .join(', ');
+        const inputId = container.id.replace('-tags', '');
+        const hiddenInput = document.getElementById(inputId);
+        if (hiddenInput) hiddenInput.value = selectedValues;
+    }
+
+    // 태그 클릭해서 선택/해제
+    document.querySelectorAll('.tag-container').forEach(container => {
+        container.addEventListener('click', function (e) {
+            if (!e.target.classList.contains('tag')) return;
+            e.target.classList.toggle('selected');
+            updateHiddenFromContainer(container);
+        });
+    });
+
+    // 사용자 정의 태그 추가
+    document.querySelectorAll('.custom-tag-add').forEach(button => {
+        button.addEventListener('click', function () {
+            const targetId = this.dataset.target;
+            const container = document.getElementById(targetId);
+            const input = this.parentElement.querySelector('.custom-tag-input');
+
+            const value = input.value.trim();
+            if (!value) return;
+
+            // 이미 같은 태그 있으면 선택만 켜기
+            const existing = [...container.querySelectorAll('.tag')]
+                .find(tag => tag.dataset.value === value);
+            if (existing) {
+                existing.classList.add('selected');
+                updateHiddenFromContainer(container);
+                input.value = '';
+                return;
+            }
+
+            const span = document.createElement('span');
+            span.className = 'tag selected';
+            span.dataset.value = value;
+            span.textContent = value;
+            container.appendChild(span);
+
+            updateHiddenFromContainer(container);
+            input.value = '';
+        });
+    });
+
+    // 필수 태그 검증 (알림 출력)
+    const form = document.getElementById('register-form');
+    if (form) {
+        form.addEventListener('submit', function (e) {
+            const personality = (document.getElementById('personality')?.value || '').trim();
+            const goal        = (document.getElementById('goal')?.value || '').trim();
+            const skill       = (document.getElementById('skill')?.value || '').trim();
+
+            if (!personality || !goal || !skill) {
+                e.preventDefault();
+                alert('성격 태그, 목표 태그, 기술 태그를 각각 최소 1개 이상 선택해 주세요.');
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

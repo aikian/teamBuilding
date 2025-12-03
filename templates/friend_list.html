@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="section-card">
+    <div class="section-header">
+        <div>
+            <p class="eyebrow">친구 관리</p>
+            <h1 class="section-title">아이디로 친구 요청하고 수락하기</h1>
+            <p class="section-desc">아이디(로그인 ID)를 입력해 친구 요청을 보내고, 받은 요청은 바로 아래에서 수락 또는 거절할 수 있습니다.</p>
+        </div>
+    </div>
+    <div class="split-card">
+        <div class="split-panel">
+            <h3>아이디로 친구 요청</h3>
+            <form method="post" class="stack-form">
+                <div class="input-group">
+                    <label for="friend-username">친구 아이디</label>
+                    <input id="friend-username" name="username" placeholder="예) team_builder01" required />
+                </div>
+                <button type="submit" class="primary-btn">친구 요청 보내기</button>
+            </form>
+            <a class="ghost-btn" href="{{ url_for('friend.search') }}">이름/학번으로 검색</a>
+        </div>
+        <div class="split-panel">
+            <h3>받은 친구 요청</h3>
+            {% if pending_requests %}
+            <ul class="request-list">
+                {% for item in pending_requests %}
+                {% set requester = item.requester %}
+                {% set request = item.request %}
+                <li>
+                    <div>
+                        <strong>{{ requester.name if requester else ('사용자 ' ~ request.user_id) }}</strong>
+                        <p class="request-message">{{ requester.username if requester else '' }}</p>
+                    </div>
+                    <div class="button-row compact">
+                        <form method="post" action="{{ url_for('friend.accept_friend', request_id=request.id) }}">
+                            <button type="submit" class="primary-btn">수락</button>
+                        </form>
+                        <form method="post" action="{{ url_for('friend.reject_friend', request_id=request.id) }}">
+                            <button type="submit" class="ghost-btn">거절</button>
+                        </form>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="empty-inline">새로운 친구 요청이 없습니다.</p>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<section class="list-card">
+    <h3>나의 친구</h3>
+    {% if friends %}
+    <ul class="request-list">
+        {% for friend in friends %}
+        <li>
+            <div>
+                <strong>{{ friend.name }}</strong>
+                <p class="request-message">{{ friend.student_no }} · {{ friend.school or '소속 미입력' }}</p>
+            </div>
+            <div class="button-row compact">
+                <form method="post" action="{{ url_for('friend.remove_friend', user_id=friend.id) }}">
+                    <button type="submit" class="ghost-btn">삭제</button>
+                </form>
+                <form method="post" action="{{ url_for('friend.block_user', user_id=friend.id) }}">
+                    <button type="submit" class="ghost-btn danger">차단</button>
+                </form>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p class="empty-inline">아직 친구가 없습니다. 아이디로 친구를 초대해 보세요.</p>
+    {% endif %}
+</section>
+{% endblock %}

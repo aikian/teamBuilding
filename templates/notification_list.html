@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="section-card">
+    <div class="section-header">
+        <div>
+            <p class="eyebrow">알림 센터</p>
+            <h1 class="section-title">알림 목록</h1>
+            <p class="section-desc">팀 초대, 지원 승인/거절, 친구 요청 등 모든 알림을 확인하세요.</p>
+        </div>
+    </div>
+</section>
+
+<section class="list-card">
+    <div class="section-header compact">
+        <div>
+            <h2 class="section-title">받은 알림</h2>
+            <p class="section-desc">최신 알림부터 표시됩니다.</p>
+        </div>
+    </div>
+    {% if notifications %}
+    <ul class="request-list">
+        {% for n in notifications %}
+        <li class="{{ '' if not n.read_at else 'notification-read' }}">
+            <div>
+                <!-- 수정-->
+                {# <strong>{{ n.type }}</strong> #}
+                <p class="request-message">{{ n.message }}</p>
+                <span class="chip">{{ n.created_at|kst }}</span>
+            </div>
+            {% if not n.read_at %}
+            <form method="post" action="{{ url_for('notification.mark_notification_read', notification_id=n.id) }}">
+                <button type="submit" class="ghost-btn">읽음</button>
+            </form>
+            {% else %}
+            <span class="badge subtle">읽음</span>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p class="empty-inline">새로운 알림이 없습니다.</p>
+    {% endif %}
+</section>
+{% endblock %}
