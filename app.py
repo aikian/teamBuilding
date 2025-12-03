@@ -3,6 +3,7 @@
 Flask 앱 생성, 설정 적용, DB 초기화 및 블루프린트 등록을 수행합니다.
 """
 
+import os
 from flask import Flask, render_template
 
 from config import Config
@@ -53,10 +54,20 @@ def create_app() -> Flask:
 
     return app
 
-
+'''
 if __name__ == "__main__":
     application = create_app()
     # 최초 실행 시 테이블 생성 후 개발 서버 실행
     with application.app_context():
         db.create_all()
     application.run(debug=True)
+'''
+
+if __name__ == "__main__":
+    application = create_app()
+
+    with application.app_context():
+        db.create_all()
+
+    port = int(os.environ.get("PORT", 5000))
+    application.run(host="0.0.0.0", port=port)
