@@ -1,3 +1,4 @@
+<!-- 하단 탭 네비게이션에서 카데고리를 선택했을 때-->
 {% extends "base.html" %}
 
 {% block content %}
@@ -44,9 +45,9 @@
             </select>
 
         </form>
-        <!-- 여기까지 -->
     </div>
     {% if teams %}
+    <!-- 팀이 하나라도 생성된 경우-->
     <div class="card-grid">
         {% for team in teams %}
         <article class="team-card">
@@ -71,6 +72,7 @@
         {% endfor %}
     </div>
     {% else %}
+    <!-- 팀이 생성되지 않은 경우 -->
     <p class="empty-inline">아직 팀이 없습니다. 첫 번째 팀을 만들어보세요!</p>
     {% endif %}
 </section>

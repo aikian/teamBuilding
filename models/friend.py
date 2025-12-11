@@ -1,10 +1,10 @@
 """
-Friendship model definitions.
+친구 관계 모델 정의입니다.
 
-Represents a directed friend relationship between two users. A status
-field tracks whether the relationship is pending, accepted, blocked
-or deleted.
+두 사용자 간의 단방향 친구 관계를 나타내며,
+status 필드는 관계 상태(pending, accepted, blocked, deleted)를 추적합니다.
 """
+
 
 from database import db
 from .base import BaseModel

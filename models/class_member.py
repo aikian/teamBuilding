@@ -1,10 +1,11 @@
 """
-Association table for users in classes.
+클래스 내 사용자 연결 테이블입니다.
 
-This model links a user to a class and stores the user's role
-within the class (e.g., member or admin). It allows many-to-many
-relationships between users and classes.
+이 모델은 사용자를 클래스와 연결하고, 클래스 내에서
+사용자의 역할(예: 멤버, 관리자)을 저장합니다.
+이를 통해 사용자와 클래스 간 다대다 관계를 표현할 수 있습니다.
 """
+
 
 from database import db
 from .base import BaseModel

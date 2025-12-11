@@ -103,7 +103,7 @@ def mypage() -> str:
     - 현재 로그인한 사용자 정보 조회
     - 사용자가 속한 팀 멤버십 조회
     - 팀에서 리더일 경우, 다른 멤버 존재 여부 확인
-    - TEST: 리더/일반 멤버 구분, 팀 목록 출력 확인
+    - 클래스에서 대표일 경우, 해체 필요 표시
     """
     user_id = session.get("user_id")
     if not user_id:
@@ -112,11 +112,13 @@ def mypage() -> str:
 
     # 사용자 정보 조회
     user = User.query.get(user_id)
+
     # 팀 멤버십 조회
     teams = TeamMember.query.filter_by(user_id=user_id).all()
 
     # 리더인 팀 중 다른 멤버 존재 여부 확인
     leader_conflicts: list[dict] = []
+
     for membership in teams:
         if membership.role == "LEADER":
             others = TeamMember.query.filter(
@@ -127,9 +129,26 @@ def mypage() -> str:
                 {
                     "team": membership.team,
                     "has_other_members": others > 0,
+                    "class_room": None  # 팀 관련이므로 클래스는 None
                 }
             )
+
+    # 클래스 대표 여부 확인
+    # (ClassRoom 모델의 leader_id가 현재 사용자 id와 같다면 대표)
+    from models.class_ import ClassRoom  # 클래스 모델 임포트
+
+    class_rooms = ClassRoom.query.filter_by(owner_id=user_id).all()  # owner_id로 수정
+    for c in class_rooms:
+        leader_conflicts.append(
+            {
+                "team": None,
+                "has_other_members": False,
+                "class_room": c
+            }
+        )
+
     return render_template("mypage.html", user=user, teams=teams, leader_conflicts=leader_conflicts)
+
 
 
 # ----------------------------

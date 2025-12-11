@@ -1,10 +1,10 @@
 """
-Profile model definition.
+프로필 모델 정의입니다.
 
-Stores extended profile information for a user, such as personality
-traits, goals and technical skills. This data is used by the matching
-algorithm to find suitable teams.
+사용자의 성격, 목표, 기술 스킬 등 확장된 프로필 정보를 저장합니다.
+이 데이터는 매칭 알고리즘에서 적합한 팀을 찾는 데 사용됩니다.
 """
+
 
 from database import db
 from .base import BaseModel

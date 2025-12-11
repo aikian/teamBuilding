@@ -1,11 +1,11 @@
 """
-Notification model definition.
+알림 모델 정의입니다.
 
-Represents a notification sent to a user. Notifications can be used
-for invites, acceptances, rejections, expulsions, etc. The type
-field indicates the kind of notification, and related_id can store
-the associated invitation, application, or team id.
+사용자에게 전송되는 알림을 나타냅니다. 초대, 승인, 거절, 추방 등
+여러 상황에 활용될 수 있으며, type 필드는 알림 종류를,
+related_id는 관련 초대, 신청, 팀 등의 ID를 저장할 수 있습니다.
 """
+
 
 from database import db
 from .base import BaseModel

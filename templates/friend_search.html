@@ -1,3 +1,4 @@
+<!-- friend_list 또는 team_detail.html 에서 이름/학번으로 검색 버튼을 눌렀을 때 화면 -->
 {% extends "base.html" %}
 
 {% block content %}
@@ -38,13 +39,13 @@
                 {% endif %}
             </div>
             <div class="button-row compact">
-                <!-- # 친구 추가 버튼 #-->
+                <!-- 친구 추가 버튼 -->
                 <form method="post"
                       action="{{ url_for('friend.add_friend', user_id=user.id) }}">
                     <button type="submit" class="small-btn ghost">친구 추가</button>
                 </form>
 
-                <!-- # 팀 초대 버튼 (team_id가 있을 때만 노출) # -->
+                <!-- 팀 초대 버튼 (team_id가 있을 때만 노출) -->
                 {% if team_id %}
                 <form method="post"
                       action="{{ url_for('team.invite_user', team_id=team_id, user_id=user.id) }}">

@@ -1,9 +1,9 @@
 """
-Service layer for notifications.
+알림 관련 기능을 제공하는 서비스 레이어입니다.
 
-Creates and manages notifications for users. This simplified service
-writes notifications to the database; it could be extended to send
-email or push notifications.
+사용자 알림을 생성하고 관리합니다. 이 단순 구현에서는
+알림을 데이터베이스에 기록하지만, 필요시 푸시 알림
+전송 기능으로 확장할 수 있습니다.
 """
 
 from typing import Optional

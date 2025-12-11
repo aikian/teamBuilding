@@ -1,10 +1,10 @@
 """
-Association table for users in teams.
+팀 내 사용자 연결 테이블입니다.
 
-Links a user to a team and tracks the user's role (leader or member)
-and when they joined. This is similar to ``ClassMember`` but for
-teams.
+사용자를 팀과 연결하고 사용자의 역할(리더 또는 멤버)과
+참여 시점을 기록합니다. ``ClassMember``와 유사하지만 팀용입니다.
 """
+
 
 from database import db
 from .base import BaseModel

@@ -1,25 +1,32 @@
+<!-- 팀장이 팀 상세 페이지에서 '매칭 시도' 버튼을 눌렀을 때 -->
 {% extends "base.html" %}
 
 {% block content %}
 <h2>{{ team.name }} 팀에 대한 매칭 후보</h2>
+
 {% if candidates %}
-    <table>
-        <tr><th>후보자</th><th>점수</th>{% if is_leader %}<th>초대</th>{% endif %}</tr>
-        {% for user, score in candidates %}
-            <tr>
-                <td>{{ user.name }}</td>
-                <td>{{ score }}</td>
-                {% if is_leader %}
-                    <td>
-                        <form method="post" action="{{ url_for('team.invite_user', team_id=team.id, user_id=user.id) }}">
-                            <button type="submit">초대</button>
-                        </form>
-                    </td>
-                {% endif %}
-            </tr>
-        {% endfor %}
-    </table>
+  <div class="card-grid">
+    {% for user, score in candidates %}
+      <div class="list-card">
+        <div class="class-card-head">
+          <div>
+            <h3 class="list-title">{{ user.name }}</h3>
+            <p class="list-desc">매칭 점수: <span class="badge">{{ score }}</span></p>
+          </div>
+          {% if is_leader %}
+          <div class="team-pill-actions">
+            <form method="post" action="{{ url_for('team.invite_user', team_id=team.id, user_id=user.id) }}">
+              <button type="submit" class="invite-btn primary">초대</button>
+            </form>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
 {% else %}
+  <div class="empty-state">
     <p>해당 조건에 맞는 후보가 없습니다.</p>
+  </div>
 {% endif %}
 {% endblock %}

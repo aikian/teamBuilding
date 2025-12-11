@@ -73,8 +73,8 @@ def join() -> str:
 @class_bp.route("/<int:class_id>")
 def detail(class_id: int) -> str:
     """Display a single class and its teams."""
-    from flask import request, session   # 추가
-    from models.user import User         # 추가
+    from flask import request, session   
+    from models.user import User         
 
     clazz = ClassRoom.query.get_or_404(class_id)
     teams = TeamService.list_teams_for_class(class_id)
@@ -114,7 +114,20 @@ def detail(class_id: int) -> str:
                 key=lambda t: (calc_match_score(t), t.id),
                 reverse=True,
             )
-    # 여기까지 정렬 관련
     
-    # 수정
     return render_template("class_detail.html", clazz=clazz, class_room=clazz, teams=teams)
+
+@class_bp.route("/<int:class_id>/dissolve", methods=["POST"])
+def dissolve(class_id: int):
+    """클래스 해체 기능 (클래스 대표만 가능)"""
+    user_id = session.get("user_id")
+    if not user_id:
+        flash("로그인이 필요합니다.")
+        return redirect(url_for("user.login"))
+
+    try:
+        ClassService.dissolve_class(class_id, user_id)
+        flash("클래스를 해체했습니다.")
+    except ValueError as exc:
+        flash(str(exc))
+    return redirect(url_for("class.list_classes"))

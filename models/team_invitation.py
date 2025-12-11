@@ -1,10 +1,11 @@
 """
-Team invitation model.
+팀 초대 모델입니다.
 
-Represents an invitation sent by a team leader to a user. The
-invitation can be pending, accepted or rejected. On acceptance the
-user is added to the team.
+팀장이 사용자에게 보낸 초대를 나타내며,
+초대 상태는 pending, accepted, rejected가 될 수 있습니다.
+수락 시 사용자가 팀에 추가됩니다.
 """
+
 
 from database import db
 from .base import BaseModel

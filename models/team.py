@@ -1,10 +1,11 @@
 """
-Team model definition.
+팀 모델 정의입니다.
 
-Represents a team within a class or category. Each team has a name,
-goal, required skills and capacity. It may belong to either a class
-or a category (but not both).
+클래스 또는 카테고리 내 팀을 나타내며, 각 팀은 이름, 목표,
+필요 기술, 정원을 가집니다. 팀은 클래스나 카테고리 중
+하나에만 속할 수 있습니다.
 """
+
 
 from database import db
 from .base import BaseModel

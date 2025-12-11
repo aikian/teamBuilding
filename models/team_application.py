@@ -1,9 +1,10 @@
 """
-Team application model.
+팀 가입 신청 모델입니다.
 
-Stores a user's application to join a team. The application can be
-approved or rejected by the team leader.
+사용자가 팀에 가입하기 위해 제출한 신청을 저장하며,
+팀장은 해당 신청을 승인하거나 거절할 수 있습니다.
 """
+
 
 from database import db
 from .base import BaseModel

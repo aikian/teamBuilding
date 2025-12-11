@@ -19,13 +19,13 @@ friend_bp = Blueprint("friend", __name__)
 @friend_bp.route("/search", methods=["GET", "POST"])
 def search() -> str:
     """Search for users by name or student number."""
-    team_id = request.args.get("team_id", type = int) # 추가 코드
+    team_id = request.args.get("team_id", type = int)
     results = []
     if request.method == "POST":
         keyword = request.form.get("keyword", "").strip()
         if keyword:
             results = FriendService.search_users(keyword)
-    return render_template("friend_search.html", results=results, team_id=team_id) # 수정
+    return render_template("friend_search.html", results=results, team_id=team_id)
 
 
 @friend_bp.route("/add/<int:user_id>", methods=["POST"])

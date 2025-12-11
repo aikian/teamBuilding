@@ -175,11 +175,24 @@ def process_invitation(invitation_id: int, action: str):
     if not current_user_id:
         flash("로그인이 필요합니다.")
         return redirect(url_for("user.login"))
+
     accept = action == "accept"
-    TeamService.process_invitation(invitation_id, accept, current_user_id)
+    try:
+        TeamService.process_invitation(invitation_id, accept, current_user_id)
+        if accept:
+            flash("초대를 수락했습니다.")
+        else:
+            flash("초대를 거절했습니다.")
+    except ValueError as exc:
+        # 정원 초과 등 TeamService에서 raise한 예외 처리
+        flash(str(exc))
+    except Exception as exc:
+        # 기타 예외 처리
+        flash("초대를 처리하는 중 오류가 발생했습니다.")
     return redirect(request.referrer or url_for("notification.list_notifications"))
 
-# 수정
+
+
 @team_bp.route("/remove/<int:team_id>/<int:user_id>", methods=["POST"])
 def remove_member(team_id: int, user_id: int):
     """Remove a member from a team."""
@@ -234,7 +247,7 @@ def update_recruit_status(team_id: int, status: str):
     return redirect(request.referrer or url_for("team.team_detail", team_id=team_id))
 
 
-# 추가 코드
+
 @team_bp.route("/<int:team_id>/edit", methods=["GET", "POST"])
 def edit_team(team_id: int):
     """팀 정보를 수정하는 페이지 (팀장 전용)."""

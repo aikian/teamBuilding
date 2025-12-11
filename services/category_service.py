@@ -1,8 +1,8 @@
 """
-Service layer for category operations.
+카테고리 관련 기능을 제공하는 서비스 레이어입니다.
 
-Allows creation of categories and retrieval of all categories. Teams
-may be associated with a category.
+카테고리 생성과 전체 카테고리 조회가 가능하며,
+팀이 특정 카테고리에 연결될 수도 있습니다.
 """
 
 from typing import List

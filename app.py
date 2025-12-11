@@ -3,8 +3,7 @@
 Flask 앱 생성, 설정 적용, DB 초기화 및 블루프린트 등록을 수행합니다.
 """
 
-import os
-from flask import Flask, render_template
+from flask import Flask, render_template, session
 
 from config import Config
 from database import db
@@ -47,27 +46,17 @@ def create_app() -> Flask:
             return ""
         return (value + timedelta(hours=9)).strftime("%Y-%m-%d %H:%M")
 
-    # 홈 페이지
+    # 주요 섹션으로 이동할 수 있는 간단한 홈 페이지입니다.
+    # 프로젝트 발표나 데모에 맞추어 필요하다면 자유롭게 수정할 수 있습니다.
     @app.route("/")
     def index() -> str:
         return render_template("index.html")
 
     return app
 
-'''
 if __name__ == "__main__":
     application = create_app()
     # 최초 실행 시 테이블 생성 후 개발 서버 실행
     with application.app_context():
         db.create_all()
     application.run(debug=True)
-'''
-
-if __name__ == "__main__":
-    application = create_app()
-
-    with application.app_context():
-        db.create_all()
-
-    port = int(os.environ.get("PORT", 5000))
-    application.run(host="0.0.0.0", port=port)

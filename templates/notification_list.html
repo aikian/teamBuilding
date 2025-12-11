@@ -1,3 +1,4 @@
+<!-- 상단 탭 네비게이션의 알림 버튼을 클릭했을 때 -->
 {% extends "base.html" %}
 
 {% block content %}
@@ -23,7 +24,6 @@
         {% for n in notifications %}
         <li class="{{ '' if not n.read_at else 'notification-read' }}">
             <div>
-                <!-- 수정-->
                 {# <strong>{{ n.type }}</strong> #}
                 <p class="request-message">{{ n.message }}</p>
                 <span class="chip">{{ n.created_at|kst }}</span>

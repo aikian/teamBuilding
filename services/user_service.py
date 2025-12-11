@@ -1,9 +1,9 @@
 """
-Service layer for user-related operations.
+사용자 관련 기능을 제공하는 서비스 레이어입니다.
 
-Contains business logic for creating and verifying users. Passwords
-are hashed for security. Additional profile fields are stored in the
-``Profile`` model.
+사용자 생성 및 검증과 관련된 비즈니스 로직을 포함하며,
+보안을 위해 비밀번호는 해시 처리됩니다. 추가 프로필 정보는
+``Profile`` 모델에 저장됩니다.
 """
 
 from typing import Optional

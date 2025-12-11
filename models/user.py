@@ -1,10 +1,11 @@
 """
-User model definition.
+사용자 모델 정의입니다.
 
-Represents a registered user in the system. Each user has a unique
-username and student number, a hashed password and a name. A user may
-belong to many classes and teams through association tables.
+시스템에 등록된 사용자를 나타내며, 각 사용자는 고유한
+username과 학번, 해시된 비밀번호, 이름을 가집니다.
+사용자는 연결 테이블을 통해 여러 클래스와 팀에 속할 수 있습니다.
 """
+
 
 from database import db
 from .base import BaseModel
@@ -22,3 +23,7 @@ class User(BaseModel):
     # One-to-one relationship to Profile. ``uselist=False`` makes
     # SQLAlchemy return a single object rather than a list.
     profile = db.relationship("Profile", backref="user", uselist=False)
+
+    class_id = db.Column(db.Integer, db.ForeignKey('classes.id'), nullable=True)  # 클래스 테이블에 외래키로 연결
+    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=True)
+    

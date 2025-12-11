@@ -1,3 +1,4 @@
+<!-- 카테고리 목록에서 '팀 목록/만들기' 버튼을 눌렀을 때 화면-->
 {% extends "base.html" %}
 
 {% block content %}
@@ -13,6 +14,7 @@
     </div>
     <div class="split-card">
         <div class="split-panel">
+        <!-- 새로운 카테고리 만들기 탭 -->
             <h3>카테고리 만들기</h3>
             <p class="section-desc">겹치지 않는 이름으로 관심 분야를 등록해 보세요.</p>
             <form method="post" class="stack-form">
@@ -24,6 +26,7 @@
             </form>
         </div>
         <div class="split-panel">
+        <!-- 카테고리 팀 빌딩 안내 -->
             <h3>카테고리 활용 안내</h3>
             <ul class="guideline-list">
                 <li>카테고리를 선택하면 소속된 팀을 한 번에 볼 수 있습니다.</li>
@@ -35,6 +38,7 @@
 </section>
 
 <section class="list-card">
+    <!-- 카테고리가 하나라도 생성된 경우 -->
     <div class="section-header compact">
         <div>
             <h2 class="section-title">카테고리 목록</h2>
@@ -56,6 +60,7 @@
         {% endfor %}
     </ul>
     {% else %}
+    <!-- 카테고리가 생성되지 않은 경우 -->
     <p class="empty-inline">아직 등록된 카테고리가 없습니다. 관심 주제를 직접 추가해 주세요.</p>
     {% endif %}
 </section>

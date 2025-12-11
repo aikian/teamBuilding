@@ -1,4 +1,4 @@
-<!-- category 관련 모두 class 관련으로 수정 -->
+<!-- 클래스 상세 페이지('팀 목록/만들기' 버튼을 눌러서 나온 페이지) -->
 {% extends "base.html" %}
 
 {% block content %}
@@ -9,11 +9,21 @@
             <h1 class="section-title">{{ class_room.name }}</h1>
             <p class="section-desc">이 수업에서 팀을 찾고 만들 수 있는 공간입니다.</p>
         </div>
-        <div class="section-cta">
+        <div class="section-cta" style="display: flex; justify-content: flex-end; gap: 12px;">
             <a class="primary-btn"
                href="{{ url_for('team.create_team') }}?class_id={{ class_room.id }}">
                 이 수업에 팀 만들기
             </a>
+
+            <!-- 클래스 대표만 볼 수 있는 클래스 해체 버튼 -->
+            {% if session.user_id == class_room.owner_id %}
+            <form method="post" action="{{ url_for('class.dissolve', class_id=class_room.id) }}" onsubmit="return confirm('정말 클래스를 해체하시겠습니까? 이 작업은 되돌릴 수 없습니다.');"style="margin: 0;">
+                <button type="submit" class="ghost-btn danger">
+                    클래스 해체
+                </button>
+            </form>
+            {% endif %}
+
         </div>
     </div>
     <div class="info-banner">
@@ -28,7 +38,7 @@
             <p class="section-desc">관심 있는 팀을 선택해 상세에서 바로 참여 신청할 수 있습니다.</p>
         </div>
 
-        <!-- 정렬기능 추가-->
+        <!-- 정렬 드롭다운 버튼 -->
         <form method="get" action="{{ url_for('class.detail', class_id=clazz.id) }}" style="margin-left:auto; text-align:right;">
             <label for="sort" class="helper-text" style="text-align:right; display:block;">
                 정렬 기준
@@ -45,11 +55,11 @@
                 </option>
             </select>
         </form>
-        <!-- 여기까지-->
     </div>
     
     {% if teams %}
     <div class="card-grid">
+        <!-- 팀이 하나라도 생성된 경우 -->
         {% for team in teams %}
         <article class="team-card">
             <div class="team-card-head">
@@ -75,6 +85,7 @@
         {% endfor %}
     </div>
     {% else %}
+    <!-- 팀이 생성되지 않은 경우-->
     <p class="empty-inline">아직 팀이 없습니다. 첫 번째 팀을 만들어보세요!</p>
     {% endif %}
 </section>

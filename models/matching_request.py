@@ -1,10 +1,7 @@
 """
-Matching request model.
+매칭 요청 모델입니다.
 
-Stores a team leader's request to find potential members according to
-certain criteria. It could be extended to include weights for
-personality, skills and goals. For simplicity we just store the team
-and a timestamp.
+팀장이 특정 기준에 따라 잠재적인 팀원을 찾기 위해 요청한 내용을 저장합니다.
 """
 
 from database import db

@@ -1,11 +1,10 @@
 """
-Service layer for friend operations.
+친구 관련 기능을 제공하는 서비스 레이어입니다.
 
-Handles searching for users, sending friend requests, accepting or
-blocking, and listing friends. In this minimal implementation we
-store friend relationships as a single row with a status indicating
-whether the friendship is pending, accepted, or blocked.
+사용자 검색, 친구 요청 전송, 수락/차단, 친구 목록 조회를 처리하며,
+최소 구현에서는 친구 관계를 하나의 행으로 저장하고 상태(pending, accepted, blocked)로 관리합니다.
 """
+
 
 from typing import List
 
