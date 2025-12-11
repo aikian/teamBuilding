@@ -56,7 +56,9 @@ def create_app() -> Flask:
 
 if __name__ == "__main__":
     application = create_app()
-    # 최초 실행 시 테이블 생성 후 개발 서버 실행
+
     with application.app_context():
         db.create_all()
-    application.run(debug=True)
+
+    port = int(os.environ.get("PORT", 5000))
+    application.run(host="0.0.0.0", port=port)
